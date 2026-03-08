@@ -21,16 +21,16 @@ Interactive Streamlit-based web interface
 Designed for research paper experimentation
 
 Technologies Used
-Category	Tools
-Programming	Python
-Deep Learning	TensorFlow / Keras
-Quantum Computing	Qiskit
-Data Processing	NumPy, Pandas
-Image Processing	OpenCV, Pillow
-Visualization	Matplotlib
-Interface	Streamlit
-Project Workflow
 
+->Programming-Python
+->Deep Learning	-TensorFlow / Keras
+->Quantum Computing-	Qiskit
+->Data Processing-	NumPy, Pandas
+->Image Processing-	OpenCV, Pillow
+->Visualization-	Matplotlib
+->Interface	-Streamlit
+
+Project Workflow-
 Load and preprocess MRI brain scan dataset
 
 Train deep learning models (CNN, ResNet)
@@ -72,17 +72,6 @@ Pituitary Tumour
 
 No Tumour
 
-Model Performance Comparison
-
-The following graph compares the performance of different machine learning models.
-
-(Add your generated graph here)
-
-Example:
-
-![Model Accuracy Comparison](graphs/model_comparison.png)
-
-This visualization highlights how classical models perform compared to the hybrid Quantum-AI architecture.
 
 Quantum Circuit Visualization
 
