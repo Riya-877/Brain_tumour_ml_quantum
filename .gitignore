@@ -1,0 +1,7 @@
+brainenv310/
+brainquantum_env/
+__pycache__/
+models/
+data/
+*.h5
+*.keras
