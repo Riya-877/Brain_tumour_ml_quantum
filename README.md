@@ -18,6 +18,8 @@ Visualization of model comparison graphs
 
 Interactive Streamlit-based web interface
 
+Live related-research search for each prediction using SerpApi (Google Scholar)
+
 Designed for research paper experimentation
 
 Technologies Used
@@ -29,6 +31,7 @@ Technologies Used
 ->Image Processing-	OpenCV, Pillow
 ->Visualization-	Matplotlib
 ->Interface	-Streamlit
+->Research Search	-SerpApi (Google Scholar API)
 
 Project Workflow-
 Load and preprocess MRI brain scan dataset
@@ -85,16 +88,50 @@ Measurement results
 
 Hybrid model predictions
 
+Related Research Search (SerpApi)
+
+After every prediction, the app uses the [SerpApi](https://serpapi.com) Google Scholar API to fetch recent (2022+) research papers about the predicted tumour type, e.g. glioma MRI deep learning classification. Each result shows the title, authors, venue, snippet, citation count, and a PDF link when one is available.
+
+Results are cached for 24 hours per query, so re-uploading images does not use up SerpApi search credits. The code is in `serpapi_research.py`.
+
 Running the Project
-Clone the Repository
+
+1. Clone the repository
+
+```bash
 git clone https://github.com/Riya-877/Brain_tumour_ml_quantum.git
 cd Brain_tumour_ml_quantum
-Install Dependencies
-pip install -r requirements.txt
-Run the Streamlit Application
-streamlit run app.py
+```
 
-The application will open in your browser where users can upload MRI images and get tumour predictions in real time.
+2. Create a virtual environment (Python 3.11) and install dependencies
+
+```bash
+python3.11 -m venv brainenv311
+source brainenv311/bin/activate
+pip install -r requirements.txt
+```
+
+3. Add the dataset and trained model
+
+The `data/` and `models/` folders are not committed. Download the [Brain Tumor MRI Dataset](https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset), put `Training/` in `data/train` and `Testing/` in `data/test`, then run `train_cnn_model.ipynb` to create `models/brain_tumor_model.h5`.
+
+4. Add your SerpApi key
+
+Get a free key from https://serpapi.com/manage-api-key and create `.streamlit/secrets.toml` (already gitignored):
+
+```toml
+SERPAPI_API_KEY = "your_serpapi_key"
+```
+
+You can also set it as an environment variable: `export SERPAPI_API_KEY=your_serpapi_key`. Without a key, the app still works but skips the research section.
+
+5. Run the Streamlit application
+
+```bash
+streamlit run app.py
+```
+
+The application will open in your browser where users can upload MRI images and get tumour predictions in real time, with Grad-CAM explainability, quantum validation, and related research papers.
 
 Project Structure
 Brain_tumour_ml_quantum
@@ -118,6 +155,7 @@ Brain_tumour_ml_quantum
 ├── evaluate_models.py
 │
 ├── app.py
+├── serpapi_research.py
 ├── requirements.txt
 └── README.md
 Research Motivation
