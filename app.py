@@ -8,6 +8,8 @@ import cv2
 from qiskit import QuantumCircuit, transpile
 from qiskit_aer import AerSimulator
 
+from serpapi_research import RESEARCH_QUERIES, fetch_research_papers, get_serpapi_key
+
 # ----------------------------
 # Config
 # ----------------------------
@@ -16,7 +18,8 @@ st.set_page_config(
     layout="centered"
 )
 
-CLASS_NAMES = ["Glioma", "Meningioma", "Pituitary", "No Tumor"]
+# Must match the alphabetical folder order used in training: glioma, meningioma, notumor, pituitary
+CLASS_NAMES = ["Glioma", "Meningioma", "No Tumor", "Pituitary"]
 CONF_THRESHOLD = 0.6
 
 # ----------------------------
@@ -66,6 +69,9 @@ def overlay_gradcam(image, heatmap, alpha=0.4):
 
     if image_np.ndim == 3 and image_np.shape[2] == 4:
         image_np = cv2.cvtColor(image_np, cv2.COLOR_RGBA2RGB)
+    elif image_np.ndim == 2:
+        # Grayscale MRI scans need 3 channels to blend with the heatmap
+        image_np = cv2.cvtColor(image_np, cv2.COLOR_GRAY2RGB)
 
     heatmap = cv2.resize(
         heatmap,
@@ -74,6 +80,8 @@ def overlay_gradcam(image, heatmap, alpha=0.4):
 
     heatmap = np.uint8(255 * heatmap)
     heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+    # applyColorMap returns BGR; convert so hot regions show red, not blue
+    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
 
     if image_np.dtype != np.uint8:
         image_np = np.uint8(255 * image_np)
@@ -200,3 +208,40 @@ if uploaded_file is not None:
         st.json(counts)
     else:
         st.info("Quantum validation skipped due to low model confidence.")
+
+    # ----------------------------
+    # Related Research (SerpApi)
+    # ----------------------------
+    st.subheader("📚 Related Research Papers")
+
+    research_class = predicted_class if predicted_class in RESEARCH_QUERIES else "No Tumor"
+    research_query = RESEARCH_QUERIES[research_class]
+    st.caption(f"Recent Google Scholar results for \"{research_query}\" · powered by SerpApi")
+
+    serpapi_key = get_serpapi_key()
+
+    if not serpapi_key:
+        st.info("Set SERPAPI_API_KEY in .streamlit/secrets.toml to see related research papers.")
+    else:
+        try:
+            with st.spinner("Searching Google Scholar via SerpApi..."):
+                papers = fetch_research_papers(research_query, serpapi_key)
+        except Exception as e:
+            papers = []
+            st.warning(f"Could not fetch research papers: {e}")
+
+        for paper in papers:
+            with st.container(border=True):
+                st.markdown(f"**[{paper['title']}]({paper['link']})**")
+                if paper["authors"]:
+                    st.caption(paper["authors"])
+                if paper["snippet"]:
+                    st.write(paper["snippet"])
+
+                extras = []
+                if paper["cited_by"]:
+                    extras.append(f"Cited by {paper['cited_by']}")
+                if paper["pdf_link"]:
+                    extras.append(f"[PDF]({paper['pdf_link']})")
+                if extras:
+                    st.markdown(" · ".join(extras))

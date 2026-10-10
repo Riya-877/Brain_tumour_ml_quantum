@@ -5,3 +5,6 @@ models/
 data/
 *.h5
 *.keras
+.streamlit/secrets.toml
+.env
+brainenv311/

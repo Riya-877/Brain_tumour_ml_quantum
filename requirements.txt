@@ -1,0 +1,21 @@
+# Tested with Python 3.11
+tensorflow==2.15.1
+numpy==1.26.4
+pandas==3.0.6
+scikit-learn==1.9.1
+joblib==1.6.0
+
+# Image processing & visualization
+opencv-python-headless==4.11.0.86
+pillow==12.3.0
+matplotlib==3.11.2
+
+# Quantum
+qiskit==2.4.2
+qiskit-aer==0.17.2
+pennylane==0.39.0
+autoray==0.6.12
+
+# Web app & research search
+streamlit==1.60.0
+serpapi==1.1.2
